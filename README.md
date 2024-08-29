@@ -1,6 +1,6 @@
 <img height="100" src="C:\Users\cored\Desktop\Github\ixci-grpc\client\static\images\IXCI-icon.png" width="200"/>
 
-# The Immersive eXperimenter Control Interface
+# The Immersive eXperimenter Control Interface (gRPC Version)
 
 The Immersive eXperimentar Control Interface is a research support application aimed at facilitating the remote control
 of XR HCI experiments in standalone devices that
