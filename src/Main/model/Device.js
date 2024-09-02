@@ -10,9 +10,9 @@ const Schema = mongoose.Schema;
 const DeviceSchema = new Schema({
     macAddress: String,
     alias: String,
-    user:   String /* username of the user that owns this device */ ,
-    last_conn_time: Date /* last time this device connected to the server */ ,
-
+    user: String /* username of the user that owns this device */,
+    last_conn_time: Date /* last time this device connected to the server */,
+    user_id: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
 }, {versionKey: false});
 
 const Device = mongoose.model('devices', DeviceSchema);

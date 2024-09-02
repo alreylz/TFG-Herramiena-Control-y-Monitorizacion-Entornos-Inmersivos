@@ -18,12 +18,13 @@ const RpcSchema = new Schema({
             enum: ['UNARY', 'SERVER_STREAMING', 'CLIENT_STREAMING', 'BIDIRECTIONAL'],
             default: 'UNARY'
         },
+        description: String, // Optional
         //The return type of the function
         returnType: Message.schema,
         //The data that is sent along with the function (parameters)
         argsType: Message.schema,
         // The user that created this RPC
-        user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
+        user_id: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true}
     }
 );
 

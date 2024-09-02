@@ -5,14 +5,12 @@ const Schema = mongoose.Schema;
 
 
 // Schema Dependencies
-const Message  = require('./Message.js');
-const SupportedTypes = ['int32', 'string', 'bool', Message ]
+const Message = require('./Message');
+const SupportedTypes = ['int32', 'string', 'bool', Message]
 
 
 //TODO: refactor and support more types
 // https://protobuf.dev/programming-guides/proto3/
-
-
 
 
 /*
@@ -24,13 +22,6 @@ const MessageFieldSchema = new Schema({
         type: String,
         required: true
     },
-    // OLD: datatype must be one of the supported types (NO NESTING)
-    // dataType: {
-    //     type: String,
-    //     enum: SupportedTypes,
-    //     default: 'string',
-    //     required: true
-    // },
     dataType: {
         type: mongoose.Schema.Types.Mixed,
         enum: SupportedTypes,

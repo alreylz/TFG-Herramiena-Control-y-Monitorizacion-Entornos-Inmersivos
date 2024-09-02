@@ -6,6 +6,14 @@
 import {GetRequestAsyncJWT, PostRequestAsyncJson, RequestAsync} from "./Shared/Web_Requests.js";
 
 
+const REST_BASE_URI = "http://localhost:3000/api/v1/"
+
+
+// export class REST_Call{
+//
+// }
+
+
 export async function getAvailableMessages() {
     const allMessages = await GetRequestAsyncJWT("http://localhost:3000/api/v1/messages", localStorage.getItem("ixci-jwt"));
     console.log("MESSAGES", allMessages);

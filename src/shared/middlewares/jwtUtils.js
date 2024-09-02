@@ -1,4 +1,3 @@
-
 const bodyParser = require('body-parser');
 const jwt = require("jsonwebtoken")
 
@@ -8,13 +7,12 @@ const AUTH_HEADER_NAME = "authorization";
 
 /***
  * Express middleware function that intercepts a request and verifies a JWT
- * @param req the incoming request
- * @param res the response to generate (here OR in a subsequent step of the request processing)
+ * @param req {Request} the incoming request
+ * @param res{Response} the response to generate (here OR in a subsequent step of the request processing)
  * @param next allows the processing of the request to continue
  * @returns {*}
  */
 function verifyTokenMiddleware(req, res, next) {
-
 
 
     //Check token is present in request
@@ -53,22 +51,17 @@ function verifyTokenMiddleware(req, res, next) {
 };
 
 
-
-
-
-
-
 /*
 * Given a request object, checks wether the request contains a valid JWT token
 * and if so, returns the decoded token
  */
-function verifyJWT(req){
+function verifyJWT(req) {
 
 
     //Check wether token is present in request
     if (!AUTH_HEADER_NAME in req.headers) {
         console.log("NO AUTH HEADER PROVIDED");
-        throw new  Error("No authorization header provided");
+        throw new Error("No authorization header provided");
     }
 
     let token = undefined;

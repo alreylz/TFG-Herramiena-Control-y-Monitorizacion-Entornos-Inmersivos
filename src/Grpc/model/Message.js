@@ -13,7 +13,7 @@ const User = require("../../Main/model/User");
 
 // Schema definition (Represents the structure of the document)
 const MessageSchema = new Schema({
-    messageName: String,
+    messageName: {type: String, required: true},
     messageFields: [MessageField.schema],
     user_id: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true}
 }, {versionKey: false});

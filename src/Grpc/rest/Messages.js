@@ -1,21 +1,19 @@
 /***
- * @fileOverview Implementa el uso
+ *  Implementa la API de Mensajes
  */
-
 
 const express = require('express');
 const router = express.Router();
 
 const ModelUser = require('../../Main/model/User');
-const ModelMessage = require("../model/Message");
-const {verifyJWT, verifyTokenMiddleware} = require("../../shared/middlewares/jwtUtils");
-const ModelRPC = require("../model/RPC");
+const MessageModel = require("../model/Message");
+
+const {verifyTokenMiddleware} = require("../../shared/middlewares/jwtUtils");
 
 
 router.get('/messages', function (req, res) {
 
-
-    ModelMessage.find({}, (err, messages) => {
+    MessageModel.find({}, (err, messages) => {
         if (err) {
             return res.status(500).json({
                 message: 'Error mostrando los messages'
@@ -27,36 +25,68 @@ router.get('/messages', function (req, res) {
 
 });
 
+// GET
+router.get('/messages', verifyTokenMiddleware, async function (req, res) {
 
+    console.log("🟢 GET MESSAGE (JWT)")
+    const user_id = await ModelUser.findOne({username: req.user.username});
+    const messages = await MessageModel.find({user_id: user_id});
+
+    return res.status(200).json(messages);
+});
+
+// POST
 router.post("/messages", verifyTokenMiddleware, async function (req, res) {
 
+    console.log("🟢 POST MESSAGE (JWT)")
 
-    console.log(" POST MESSAGES")
-
-    //@todo finish this implementation
-    //Tengo que restringir lo que puede ser messageFields
-    // -> Tiene que ser uno de los tipos soportados (simples) o un tipo de message ya existente ; hay que hacer esas comprobaciones
+    const user_id = await ModelUser.findOne({username: req.user.username});
 
 
-    const nuMessage = new ModelMessage({
+    //@todo: Restringir lo que puede ser messageFields :
+    // It must be a supported type (simple) or another custom Message ;
+
+    const nuMessage = new MessageModel({
         messageName: req.body.messageName,
         messageFields: req.body.messageFields,
-        user_id: await ModelUser.findOne({username: req.user.username}),
+        user_id: user_id
     });
-
-
     await nuMessage.save();
 
-
     return res.status(200).json(nuMessage)
+
+});
+
+
+router.put("/messages/:id", verifyTokenMiddleware, async function (req, res) {
+
+    console.log("🟢 PUT MESSAGE (JWT)")
+
+    const user_id = await ModelUser.findOne({username: req.user.username});
+
+    const messageToUpdate = await MessageModel.updateOne({_id: req.params.id},
+        {
+            messageName: req.body.messageName,
+            messageFields: req.body.messageFields
+        }, {upsert: true});
+
+
+    await messageToUpdate.save();
+
+
+    return res.status(200).json(messageToUpdate)
 
 
 });
 
 
 router.delete('/messages/:id', function (req, res) {
+
+    console.log("🟢 DELETE MESSAGE (JWT)")
+
+
     const id = req.params.id;
-    ModelMessage.findByIdAndRemove(id, (err, message) => {
+    MessageModel.findByIdAndRemove(id, (err, message) => {
         if (err) {
             return res.status(500).json({
                 message: 'Error eliminando al message'
@@ -66,38 +96,5 @@ router.delete('/messages/:id', function (req, res) {
         res.redirect('/messages');
     })
 });
-
-
-//TODO: Remove this
-//OBTENER MENSAJES JSON
-router.get('/get/allMessages', function (req, res) {
-
-    ModelMessage.find({}, (err, messages) => {
-        if (err) {
-            return res.status(500).json({
-                message: 'Error mostrando los messages'
-            })
-        }
-        res.send(messages);
-
-    })
-});
-
-var message_delete = "";
-
-//ELIMINAR MENSAJE
-router.get('/delete_message/:id/:name', function (req, res) {
-    const id = req.params.id;
-    ModelMessage.findByIdAndRemove(id, (err, message) => {
-        if (err) {
-            return res.status(500).json({
-                message: 'Error eliminando al message'
-            })
-        }
-        message_delete = req.params.name;
-        res.redirect('/messages');
-    })
-});
-
 
 module.exports = router;

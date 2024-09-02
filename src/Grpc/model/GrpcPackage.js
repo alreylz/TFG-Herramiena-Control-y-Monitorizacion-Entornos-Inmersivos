@@ -14,8 +14,9 @@ const User = require('mongoose').model('users');
  */
 const grpcPackageSchema = new Schema({
     name: String,
+    description: {type: String},
     createdAt: {type: Date, default: Date.now()},
-    services: [Service.schema],
+    services: {type: [Service.schema], required: true},
     user_id: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true}
 }, {versionKey: false})
 

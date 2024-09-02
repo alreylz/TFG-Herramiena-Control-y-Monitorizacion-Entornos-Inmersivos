@@ -10,10 +10,10 @@ const User = require("../../Main/model/User");
 
 // Model definition
 const serviceSchema = new Schema({
-    name: String,
+    name: {type: String, required: true},
     description: String,
-    grpcs: [Grpc.schema],
-    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
+    grpcs: {type: [Grpc.schema], required: true},
+    user_id: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true}
 }, {versionKey: false})
 
 
