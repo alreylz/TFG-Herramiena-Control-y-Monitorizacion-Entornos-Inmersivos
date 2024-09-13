@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const axios = require("axios");
+// const User = require("../model/User");
 const User = require("../model/User");
 
 const {UIStatusMessage} = require("../../shared/classes/UIStatusMessageNotificationSystem");
@@ -20,84 +21,74 @@ const validationConfig = {
  *  - Log out: destroys the session in the server (cookie)
  */
 
-
 module.exports = function (options) {
 
-    const UserAPIUri = options.UserAPIUri;
-    http://localhost:3000/v1/
+    debugger;
+    //port, hostname, secure?
+    let port = 3000;
+    let hostname = "127.0.0.1" //;|| "localhost";
+    let secure = false;
 
 
-//CREAR CUENTA
+    const UsersAPI_Endpoint = `${secure ? "https" : "http"}://${hostname}:${port}/api/v1/users`;
+    console.log("UserAPI ", UsersAPI_Endpoint)
+
+
     router
         .post("/signUp",
 
             async function (req, res) {
 
-                console.log("INTENTO DE CREACIÓN DE CUENTA - request: ", req.body)
+                let valid = {};
 
-                // Object that holds all user data after validation
-                const validated = {};
-
-                const redirectUrlOnSuccess = "/home";
-                const redirectUrlOnValidationError = "/";
-                const redirectUrlOnInternalServerError = "/error";
-
-
-                let status_msg = new UIStatusMessage("Login Successful", "Success", "success");
-                let http_status_code = 200;
-
-                // - Username in use?
+                // Check if username is taken by asking the Users API for
                 try {
-
-                    //TODO: THESE LOCAL URLS CANT BE HARDCODED
-                    const {data} = await axios.post("http://localhost:3000/api/v1/usernames/available", {username: req.body.username});
-                    console.log(data.available);
-                    if (!data.available) {
-                        status_msg = new UIStatusMessage("Username already in use", "Error", "error");
-                        return res.redirect("/");
-                    }
-                } catch (error) {
-                    return res.status(500).send("Error processing the username " + error)
-                }
-                validated.username = req.body.username;
-                // todo: Validate email
-                validated.email = req.body.email;
-
-                // todo: Make sure there is no code or weird characters in all fields
-                // - Check passwords match
-                const password = (req.body.password1 === req.body.password2) == true ? req.body.password1 : null;
-                if (password === null) {
-                    status_msg = new UIStatusMessage("Passwords don't match", "Error", "error");
+                    const responseAPI = await axios.get(UsersAPI_Endpoint, {params: {username: req.body.username}});
+                    console.log(responseAPI.data)
+                } catch (err) {
+                    console.log(err.response.msg)
+                    //User already in use
                     return res.redirect("/");
                 }
 
-                // - Password the proper length
-                if (!(typeof password == 'string' || password instanceof String) && password.length < validationConfig.minPasswordLength)
-                    return res.status(http).send("Password is too short");
 
-                //todo: hash password
-                validated.password = password;
+                // validated.username = req.body.username;
+                // // todo: Validate email
+                // validated.email = req.body.email;
+                //
+                // // todo: Make sure there is no code or weird characters in all fields
+                // // - Check passwords match
+                // const password = (req.body.password1 === req.body.password2) == true ? req.body.password1 : null;
+                // if (password === null) {
+                //     status_msg = new UIStatusMessage("Passwords don't match", "Error", "error");
+                //     return res.redirect("/");
+                // }
+                //
+                // // - Password the proper length
+                // if (!(typeof password == 'string' || password instanceof String) && password.length < validationConfig.minPasswordLength)
+                //     return res.status(http).send("Password is too short");
+                //
+                //
+                // //todo: hash password
+                // validated.password = password;
+                // //todo: prevent free text in name and surname (protect against XSS)
+                // validated.name = req.body.name;
+                // validated.surname = req.body.surname;
+                //
+                //
+                // let result = "";
+                //
+                //
+                // try {
+                //     result = await axios.post("http://localhost:3000/api/v1/users", validated)
+                // } catch (e) {
+                //     result = e;
+                // }
+                //
+                //
+                // //req.session.status_msg = new UIStatusMessage(`The user ${validated.username} was created`, "Sign Up Success", "success");
 
-                //todo: prevent free text in name and surname (protect against XSS)
-                validated.name = req.body.name;
-                validated.surname = req.body.surname;
 
-
-                let result = "";
-
-
-                try {
-                    result = await axios.post("http://localhost:3000/api/v1/users", validated)
-                } catch (e) {
-                    result = e;
-                }
-
-
-
-
-
-
-                req.session.status_msg = new UIStatusMessage(`The user ${validated.username} was created`, "Sign Up Success", "success");
                 res.status(200).redirect("/")
 
             })
@@ -124,7 +115,7 @@ module.exports = function (options) {
 
                     // Get all info from user
 
-                    let fullUserInfo = await axios.get("http://localhost:3000/api/v1/users?username="+req.body.username);
+                    let fullUserInfo = await axios.get("http://localhost:3000/api/v1/users?username=" + req.body.username);
 
                     console.log(fullUserInfo.data[0])
 
@@ -153,8 +144,7 @@ module.exports = function (options) {
                 req.session.destroy(function (err) {
                     if (err) {
                         console.log("Error on logout", err);
-                    }
-                    else {
+                    } else {
                         console.log(req.session)
                         res.redirect('/');
                     }
@@ -164,40 +154,38 @@ module.exports = function (options) {
             });
 
 
-// TODO: Refactor (this probably should be in a different file) As of now, it is an endpoint that given a username and password, checks if access to the app should be allowed
-    router
-        .post("/auth",
-
-            async function (req, res) {
-                console.log(req.body);
-
-
-                console.log("BUSCANDO CREDENCIALES EN BBDD", req.body)
-
-                try {
-
-                    const theUser = await User.findOne({username: req.body.username});
-
-                    console.log(theUser)
-
-                    if (!(req.body.username && req.body.password)) res.status(400).json({msg: "UUUU"})
-
-                    if (theUser.password == req.body.password) {
-
-                        console.log("password is correct")
-                        return res.status(200).json({msg: "LOGIN SUCCESS"})
-
-                    }
-                    else {
-                        res.status(401).json({msg: "LOGIN SUCCESS"})
-
-                    }
-                } catch (e) {
-                    return res.status(500).json({msg: "Server error " + e})
-                }
-
-            });
-
+// // TODO: Refactor (this probably should be in a different file) As of now, it is an endpoint that given a username and password, checks if access to the app should be allowed
+//     router
+//         .post("/auth",
+//
+//             async function (req, res) {
+//                 console.log(req.body);
+//
+//
+//                 console.log("BUSCANDO CREDENCIALES EN BBDD", req.body)
+//
+//                 try {
+//
+//                     const theUser = await User.findOne({username: req.body.username});
+//
+//                     console.log(theUser)
+//
+//                     if (!(req.body.username && req.body.password)) res.status(400).json({msg: "UUUU"})
+//
+//                     if (theUser.password == req.body.password) {
+//
+//                         console.log("password is correct")
+//                         return res.status(200).json({msg: "LOGIN SUCCESS"})
+//
+//                     } else {
+//                         res.status(401).json({msg: "LOGIN SUCCESS"})
+//
+//                     }
+//                 } catch (e) {
+//                     return res.status(500).json({msg: "Server error " + e})
+//                 }
+//
+//             });
 
 
     return router;

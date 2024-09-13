@@ -16,19 +16,18 @@ const DB_DATA = {
 
 const Authorization = {
     loginEndpoint: `http://${SERVER_DATA.hostname}:${SERVER_DATA.port}/api/v1/login`,
-    user: "alreylz",
-    password: "01241851"
 }
 
 
 const api = supertest(app);
 
 beforeAll(() => {
+
+
 })
 
 
 describe("Authorization (via JWT) REST API Test", () => {
-
 
     it('Registered user (jwt returned successfully)', async () => {
 
@@ -42,11 +41,11 @@ describe("Authorization (via JWT) REST API Test", () => {
         }).expect(200);
     });
 
-    it("Non existing user (jwt wont return )", async () => {
+    it("Non-existing user (unauthorized)", async () => {
 
         const invalidUser = {
             username: "pepe",
-            password: "cazzp"
+            password: "cazzo"
         }
 
         await api.post('/api/v1/login').send({

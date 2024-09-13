@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const Services_REST_API = require("./Grpc/rest/ServiceRouter");
 const RPC_REST_API = require("./Grpc/rest/RPCs");
+const ExpressDebug = require("./shared/utils/ExpressDebug");
 
 
 /***
@@ -62,12 +63,6 @@ module.exports = function (options) {
     // Allows to store the session data in a MongoDB database
     const MongoStore = require('connect-mongo');
 
-
-    console.log(`mongodb://${options.MONGO_HOST}:${options.MONGO_PORT}/${options.MONGO_DB_NAME}`)
-
-    debugger;
-
-
     app.use(session({
         //TODO: make the name of the cookie configurable
         name: "ixci",
@@ -89,14 +84,12 @@ module.exports = function (options) {
     //----------FRONT ENDPOINTS------------
     //-------------------------------------
     /* Endpoints related to sign in and sign up in the application */
-    const SessionAuth = require("./Main/routes/SessionAuth.js")(options);
+    const SessionAuth = require("./Main/routes/SessionAuth")(options);
     app.use("/", SessionAuth);
 
     console.log(getIPAddress())
 
     let JSHelpers = require("./shared/JSHelpers.js");
-
-
     console.log(options)
 
 
@@ -104,13 +97,12 @@ module.exports = function (options) {
     //----------JWT------------
     //--------------------------
     const JWT = require("./Main/routes/JWTAuth");
-    //TODO: change to /api/v1 (probably)
     app.use("/api/v1", JWT);
 
     //--------------------------
     //----------APIS------------
     //--------------------------
-    const Users_REST_API = require("./Main/rest/UsersCRUD");
+    const Users_REST_API = require("./Main/rest/Users");
     app.use("/api/v1", Users_REST_API);
     const Packages_REST_API = require("./Grpc/rest/Packages")
     app.use("/api/v1", Packages_REST_API);
@@ -120,7 +112,6 @@ module.exports = function (options) {
     app.use("/api/v1", RPC_REST_API);
     const MessageRouter = require("./Grpc/rest/Messages")
     app.use("/api/v1", MessageRouter);
-
 
     const ProtosRESTAPI = require("./Grpc/rest/ProtosRouter");
     app.use("/", ProtosRESTAPI);
@@ -135,16 +126,18 @@ module.exports = function (options) {
 
     const PubSubAPI = require("./Main/rest/PubSub");
     app.use("/", PubSubAPI);
+    const ExpressDebug = require('./shared/utils/ExpressDebug');
+    console.log("AAAAAAAAAAAAAAAAAAAAAA")
+    //console.log(ExpressDebug.showRouterEndpoints(Users_REST_API))
 
-
+    ExpressDebug.test(Users_REST_API)
     // Server info endpoint (used from the client javascript to check configuration parameters of the server)
     const ServerInfo = require("./Main/routes/ServerInfo")(options);
+
     app.use("/info", ServerInfo);
-    console.log(options)
 
 
-    const ExpressDebug = require('./shared/utils/ExpressDebug');
-    console.group("AVAILABLE ENDPOINTS:".magenta())
+    console.group("AVAILABLE ENDPOINTS:")
     ExpressDebug.showAllExpressEndpoints(app);
     console.groupEnd()
 

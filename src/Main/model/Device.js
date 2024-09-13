@@ -15,6 +15,8 @@ const DeviceSchema = new Schema({
     user_id: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
 }, {versionKey: false});
 
-const Device = mongoose.model('devices', DeviceSchema);
+const Device = mongoose.model('Device', DeviceSchema);
 
-module.exports = Device;
+module.exports = {
+    Schema: DeviceSchema
+};

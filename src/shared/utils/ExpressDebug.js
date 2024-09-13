@@ -1,7 +1,7 @@
 require('../LogColouring');
 
 
-function print (path, layer) {
+function print(path, layer) {
     if (layer.route) {
         layer.route.stack.forEach(print.bind(null, path.concat(split(layer.route.path))))
     } else if (layer.name === 'router' && layer.handle.stack) {
@@ -13,7 +13,7 @@ function print (path, layer) {
     }
 }
 
-function split (thing) {
+function split(thing) {
     if (typeof thing === 'string') {
         return thing.split('/')
     } else if (thing.fast_slash) {
@@ -30,14 +30,36 @@ function split (thing) {
 }
 
 
-
 class ExpressDebug {
-    static showAllExpressEndpoints(app){
+    static showAllExpressEndpoints(app) {
         app._router.stack.forEach(print.bind(null, []));
     }
 
-}
 
+    //Get info about a route in object-like format
+    static test(router) {
+        
+        console.log(router.stack.filter((layer) => {
+
+                if (layer.route.path)
+                    console.log(layer.route.path)
+                if (layer.route.methods)
+                    console.log(layer.route.methods)
+
+                return layer.route !== "undefined"
+            }
+        ))
+
+
+    }
+
+
+    static showRouterEndpoints(router) {
+        router.stack.forEach(print.bind(null, []));
+    }
+
+
+}
 
 
 module.exports = ExpressDebug;

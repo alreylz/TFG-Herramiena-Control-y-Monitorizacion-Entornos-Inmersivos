@@ -18,11 +18,16 @@ console.log(EnvParsed)
 const db = require("../../src/db")(EnvParsed.MONGO_HOST, EnvParsed.MONGO_PORT, EnvParsed.MONGO_DB_NAME + "Test");
 
 
+/**
+ * Deletes all documents the database
+ * @param dbConnection
+ * @returns {Promise<void>}
+ */
 async function emptyDatabase(dbConnection) {
     const collections = dbConnection.collections;
     for (const key in collections) {
         const collection = collections[key];
-        await collection.deleteMany({}); // Deletes all documents in the collection
+        await collection.deleteMany({});
     }
 }
 
@@ -214,11 +219,11 @@ async function quickDBStats(dbConnection) {
 
 
 //Executing all
-(async () => {
+async function createSampleDatabaseContent() {
 
 
     //Empty database and then insert stuff
-    await emptyDatabase(mongoose.connection);
+    await emptyDatabase(db);
 
     const testUser = await testUserDB();
     const messages = await testMessagesDB(testUser);
@@ -235,14 +240,19 @@ async function quickDBStats(dbConnection) {
     // console.log(devices)
 
 
-    quickDBStats(mongoose.connection)
+    quickDBStats(db)
 
     // testRpcSchema(user,)
     //await emptyDbCollection(mongoose.connection, "users")
     // console.log(db)
     // await mongoose.connection.close();
     //db.disconnect();
-})()
+}
+
+
+(async () => {
+    await createSampleDatabaseContent();
+})();
 
 
 module.exports = {}

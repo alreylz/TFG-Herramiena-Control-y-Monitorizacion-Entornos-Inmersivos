@@ -50,7 +50,6 @@ global.globalOptions = {...options, ...EnvParsed};
 
 
 if (options.debug) {
-
     // console.log(".env file: ", EnvParsed.parsed);
     // console.log("Options: ", program.opts());
 }
@@ -91,10 +90,10 @@ console.log("\n" +
     "█ ▀▄▀ █▀▀ █ ▄▄ █▀▀ █▀█ █▀█ █▀▀\n".blue() +
     "█ █ █ █▄▄ █    █▄█ █▀▄ █▀▀ █▄▄\n".blue() +
     "-------------------------------\n" +
-    `by @alreylz        version ${program.version}\n`)
+    `by @alreylz        version ${program.version()}\n`)
 
 
-const db = require('./db')(EnvParsed.MONGO_HOST,
+const dbConnection = require('./db')(EnvParsed.MONGO_HOST,
     EnvParsed.MONGO_PORT,
     EnvParsed.ENVIRONMENT !== "test" ? EnvParsed.MONGO_DB_NAME : EnvParsed.TEST_MONGO_DB_NAME);
 
@@ -141,5 +140,5 @@ process.on('SIGINT', () => {
 });
 
 
-exports.app = ExpressApp;
-exports.server = global.server;
+module.exports.app = ExpressApp;
+module.exports.server = global.server;

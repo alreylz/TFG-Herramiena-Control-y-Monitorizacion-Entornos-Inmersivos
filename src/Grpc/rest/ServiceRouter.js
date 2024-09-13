@@ -5,12 +5,13 @@
 
 const express = require('express');
 const router = express.Router();
+const mongoose = require("mongoose")
 
 
 const ModelUser = require('../../Main/model/User');
 
 
-const ModelService = require('../model/Service');
+const ModelService = require("../model/Service")
 const ModelRPC = require('../model/RPC');
 const {all} = require("axios");
 const {verifyTokenMiddleware} = require("../../shared/middlewares/jwtUtils");
@@ -62,7 +63,7 @@ router.post('/services', verifyTokenMiddleware, async function (req, res) {
         // Create a new service from the request body data
         const newService = new ModelService({
             name: req.body.name,
-            description : req.body.description || "",
+            description: req.body.description || "",
             grpcs: grpcs,
             user_id: theUser._id
         });
@@ -84,23 +85,22 @@ router.delete('/services/:id', verifyTokenMiddleware, async function (req, res) 
     console.log(`REST DELETE /services ${req.params.id}`.yellow() + " user: " + JSON.stringify(req.user));
 
     try {
-        const user  = await ModelUser.findOne({username:req.user.username});
+        const user = await ModelUser.findOne({username: req.user.username});
         console.log(user);
-        let removed = await ModelService.findOneAndRemove({_id: req.params.id, user_id:user});
+        let removed = await ModelService.findOneAndRemove({_id: req.params.id, user_id: user});
         if (!removed)
-            return res.status(404).json({error:"Not found", details:`A service with the provided id '${req.params.id}' does not exist`});
+            return res.status(404).json({
+                error: "Not found",
+                details: `A service with the provided id '${req.params.id}' does not exist`
+            });
         return res.status(200).json(removed);
 
-    }
-
-    catch (e){
-        return res.status(500).json( {msg:"Something went wrong "+ e})
+    } catch (e) {
+        return res.status(500).json({msg: "Something went wrong " + e})
     }
 
 
 });
-
-
 
 
 //OBTENER SERVICIOS JSON

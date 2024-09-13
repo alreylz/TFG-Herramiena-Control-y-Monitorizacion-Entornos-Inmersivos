@@ -29,6 +29,7 @@
   },
   "scripts": {
     "go": "npx nodemon src/index.js",
+    "go:inspect": "npx nodemon --inspect-brk=127.0.0.1:9228 src/index.js",
     "sass": "sass --watch client/style/scss:client/style/css",
     "test": "jest test/*",
     "test:APIs": "jest test/REST/* --silent",
@@ -47,6 +48,7 @@
     "@types/express": "^4.17.17",
     "@types/node": "^18.14.0",
     "babel-jest": "^29.7.0",
+    "cross-env": "^7.0.3",
     "jest": "^29.7.0",
     "nodemon": "^3.1.4",
     "supertest": "^7.0.0",

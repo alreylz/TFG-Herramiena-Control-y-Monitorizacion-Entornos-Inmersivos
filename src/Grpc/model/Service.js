@@ -5,18 +5,20 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 // Schema Dependencies
-const Grpc = require("./RPC");
-const User = require("../../Main/model/User");
+const RPC = require("./RPC")
+const User = require("../../Main/model/User")
 
 // Model definition
-const serviceSchema = new Schema({
+const ServiceSchema = new Schema({
     name: {type: String, required: true},
     description: String,
-    grpcs: {type: [Grpc.schema], required: true},
+    grpcs: {type: [RPC.Schema], required: true},
     user_id: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true}
 }, {versionKey: false})
 
 
-const Service = mongoose.model('services', serviceSchema);
+const Service = mongoose.model('Service', ServiceSchema);
 
-module.exports = Service;
+module.exports = {
+    Schema: ServiceSchema
+};
